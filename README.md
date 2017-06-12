@@ -441,3 +441,16 @@ There are two settings that are relevant in controlling performance:
 
 Using the two in conjunction allow an appropriate rate of URL checking to be
 achieved.
+
+## Miscellaneous
+
+### Issue tracker
+- https://github.com/googleads/adwords-scripts-linkchecker/issues
+
+### Support forum
+- https://groups.google.com/forum/#!forum/adwords-scripts
+
+### Authors
+- https://github.com/garanj
+- https://github.com/AnashOommen
+- [AdWords Scripts Team](mailto:adwords-scripts@googlegroups.com)
