@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queue-entries>
+  <queue>
+    <name>default</name>
+    <max-concurrent-requests>10</max-concurrent-requests>
+    <rate>10/s</rate>
+  </queue>
+</queue-entries>
