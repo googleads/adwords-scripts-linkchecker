@@ -22,6 +22,7 @@ import com.google.adwords.scripts.solutions.linkchecker.service.UrlCheckerServic
 import com.google.adwords.scripts.solutions.linkchecker.urlcheck.UrlCheckStatus;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.DeferredTaskContext;
+import com.google.apphosting.api.ApiProxy.OverQuotaException;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -77,7 +78,7 @@ public class UrlCheckTask implements DeferredTask {
 
     long startTime = System.nanoTime();
     List<UrlCheckStatus> statuses = subOp.getUrlStatuses();
-    int urlStatusCount = 1;
+    int numUrlsChecked = 0;
     for (UrlCheckStatus status : statuses) {
 
       long currTime = System.nanoTime();
@@ -89,21 +90,32 @@ public class UrlCheckTask implements DeferredTask {
         return;
       }
       if (status.getStatus() == UrlCheckStatus.Status.NOT_STARTED) {
-        urlCheckerService.check(status, failureMatchTexts, settings.getUserAgentString());
-      }
-
-      // To control the rate of processing, compare the time taken for all URLs in this task so far
-      // with the time expected by the rate in the settings. If the expected time is sufficiently
-      // greater than the actual time, sleep until the two are the same.
-      long timeInHand = urlStatusCount * nanosPerUrl - System.nanoTime() + startTime;
-      if (timeInHand > MIN_SLEEP_TIME_NANO_SECONDS) {
         try {
-          Thread.sleep(timeInHand / 1000000);
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
+          urlCheckerService.check(status, failureMatchTexts, settings.getUserAgentString());
+        } catch (OverQuotaException e) {
+          // If there has been too much use of the network, save progress to this point and mark the
+          // task for retry - the remaining URLs will be picked up then. It is only necessary to
+          // save progress if some has been made, otherwise avoid the hit on the Datastore quota.
+          if (numUrlsChecked > 0) {
+            datastore.saveBatchSubOperation(subOp);
+          }
+          DeferredTaskContext.markForRetry();
+          return;
+        }
+        numUrlsChecked++;
+
+        // To control the rate of processing, compare the time taken for all URLs in this task so far
+        // with the time expected by the rate in the settings. If the expected time is sufficiently
+        // greater than the actual time, sleep until the two are the same.
+        long timeInHand = numUrlsChecked * nanosPerUrl - System.nanoTime() + startTime;
+        if (timeInHand > MIN_SLEEP_TIME_NANO_SECONDS) {
+          try {
+            Thread.sleep(timeInHand / 1000000);
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+          }
         }
       }
-      urlStatusCount++;
     }
     
     // All URLs in this task have been checked. The results are saved, and then the number of
