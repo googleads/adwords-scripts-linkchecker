@@ -39,7 +39,7 @@ authenticate with the application, as well as examples of how to interact with
 the API are already available in a sample script.
 
 1.  Make a copy of the template spreadsheet for the [AdWords Scripts
-    solution](https://docs.google.com/spreadsheets/d/1LIzzu5-pTt4Rkei5U41HjFz1EwV9f0q3uv2prpAvb5I/edit)
+    solution](https://goo.gl/SiacAZ)
     by clicking **File > Make a copy**.
 
     The **Cloud Setup** and **App Engine Performance** sheets will be the ones
@@ -85,7 +85,7 @@ App Engine API to configure the Task Queue and cron. If you require this, then
 the best option is to examine the source code of the spreadsheet.
 
 1.  Make a copy of the [template
-    spreadsheet](https://docs.google.com/spreadsheets/d/1LIzzu5-pTt4Rkei5U41HjFz1EwV9f0q3uv2prpAvb5I/edit)
+    spreadsheet](https://goo.gl/SiacAZ)
     by clicking **File > Make a copy**.
 2.  Click **Tools > Script editor** and locate **CloudSetup.gs**. This script
     has the details of all calls to the App Engine Admin API, and calls for
