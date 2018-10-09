@@ -20,21 +20,20 @@ import com.google.adwords.scripts.solutions.linkchecker.endpoint.SettingsEndpoin
 import com.google.adwords.scripts.solutions.linkchecker.interceptor.AuthorizeInterceptor;
 import com.google.adwords.scripts.solutions.linkchecker.service.SharedKeyService;
 import com.google.adwords.scripts.solutions.linkchecker.tasks.UrlCheckTask;
-import com.google.api.server.spi.guice.GuiceSystemServiceServletModule;
+import com.google.api.server.spi.guice.EndpointsModule;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.matcher.Matchers;
-import java.util.HashSet;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
-class LinkCheckerServletModule extends GuiceSystemServiceServletModule {
+
+class LinkCheckerServletModule extends EndpointsModule {
 
   @Override
   protected void configureServlets() {
     super.configureServlets();
 
-    Set<Class<?>> serviceClasses = new HashSet<>();
-    serviceClasses.add(OperationsEndpoint.class);
-    serviceClasses.add(SettingsEndpoint.class);
+    ImmutableList<Class<?>> serviceClasses = ImmutableList
+        .of(OperationsEndpoint.class, SettingsEndpoint.class);
     requestStaticInjection(UrlCheckTask.class);
 
     // Interceptor is used to inspect requests to the Servlet, and where annotated with Authorize
@@ -45,6 +44,6 @@ class LinkCheckerServletModule extends GuiceSystemServiceServletModule {
         new AuthorizeInterceptor(
             getProvider(SharedKeyService.class), getProvider(HttpServletRequest.class)));
 
-    this.serveGuiceSystemServiceServlet("/_ah/spi/*", serviceClasses);
+    configureEndpoints("/_ah/api/*", serviceClasses);
   }
 }

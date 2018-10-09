@@ -15,14 +15,14 @@
 package com.google.adwords.scripts.solutions.linkchecker;
 
 import com.google.adwords.scripts.solutions.linkchecker.service.JobsCleanupService;
-import com.google.api.server.spi.guice.GuiceSystemServiceServletModule;
+import com.google.api.server.spi.guice.EndpointsModule;
 import com.google.inject.Scopes;
  
 /**
  * Module to configure the CronServlet, which provides a single URL for requesting the deletion of
  * old jobs.
  */
-public class CronModule extends GuiceSystemServiceServletModule {
+public class CronModule extends EndpointsModule {
   @Override
   protected void configureServlets() {
     bind(CronServlet.class).in(Scopes.SINGLETON);

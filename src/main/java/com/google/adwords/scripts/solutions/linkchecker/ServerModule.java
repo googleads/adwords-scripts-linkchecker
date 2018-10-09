@@ -15,12 +15,12 @@
 package com.google.adwords.scripts.solutions.linkchecker;
 
 import com.google.adwords.scripts.solutions.linkchecker.datastore.Datastore;
-import com.google.api.server.spi.guice.GuiceSystemServiceServletModule;
+import com.google.api.server.spi.guice.EndpointsModule;
 import com.google.inject.Scopes;
 import com.googlecode.objectify.ObjectifyFilter;
 
 /** Server module for the link checker. */
-public class ServerModule extends GuiceSystemServiceServletModule {
+public class ServerModule extends EndpointsModule {
   @Override
   protected void configureServlets() {
     filter("/*").through(ObjectifyFilter.class);
